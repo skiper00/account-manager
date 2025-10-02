@@ -27,29 +27,14 @@
     </div>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script lang="ts" setup>
+import { useAccountsStore } from '../store/account';
 import AccountItem from './AccountItem.vue';
 
-const accounts = ref([
-    { method: 'XXX', type: 'Локальная', login: 'XXXX.YYYYYYYYY', password: '********' },
-    { method: 'XXX: YYYYYYYYY: IIIIII.MMMMMMMMMMM', type: 'Локальная', login: 'XXXX', password: '********' },
-    { method: 'XXX', type: 'Локальная', login: 'XXXX', password: '********' },
-    { method: 'Значение', type: 'LDAP', login: 'Значение', password: '' },
-    { method: 'Значение', type: 'LDAP', login: 'Значение', password: '' }
-]);
+const store = useAccountsStore();
+const { accounts, addAccount, updateAccount, deleteAccount } = store;
 
-const addAccount = () => {
-    accounts.value.push({ method: '', type: 'Локальная', login: '', password: '' });
-};
 
-const updateAccount = (index, updatedAccount) => {
-    accounts.value[index] = updatedAccount;
-};
-
-const deleteAccount = (index) => {
-    accounts.value.splice(index, 1);
-};
 </script>
 
 <style scoped>
