@@ -17,5 +17,19 @@ export const useAccountsStore = defineStore('accounts', () => {
         { method: 'Значение', type: 'LDAP', login: 'Значение', password: '' }
     ]);
 
-    return { accounts };
+    const addAccount = () => {
+        accounts.value.push({ method: '', type: 'Локальная', login: '', password: '' });
+    };
+
+    const updateAccount = (index: number, updatedAccount: Account) => {
+        if (accounts.value[index]) {
+            accounts.value[index] = { ...updatedAccount };
+        }
+    };
+
+    const deleteAccount = (index: number) => {
+        accounts.value.splice(index, 1);
+    };
+
+    return { accounts, addAccount, updateAccount, deleteAccount };
 });
