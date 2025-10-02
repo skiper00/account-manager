@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
 
-interface Account {
+export interface Account {
+    id: string;
     method: string;
     type: 'Локальная' | 'LDAP';
     login: string;
     password: string;
 }
-
 export const useAccountsStore = defineStore('accounts', () => {
     const accounts = ref<Account[]>([]);
 
@@ -17,11 +17,11 @@ export const useAccountsStore = defineStore('accounts', () => {
             accounts.value = JSON.parse(savedAccounts);
         } else {
             accounts.value = [
-                { method: 'XXX', type: 'Локальная', login: 'XXXX.YYYYYYYYY', password: '********' },
-                { method: 'XXX: YYYYYYYYY: IIIIII.MMMMMMMMMMM', type: 'Локальная', login: 'XXXX', password: '********' },
-                { method: 'XXX', type: 'Локальная', login: 'XXXX', password: '********' },
-                { method: 'Значение', type: 'LDAP', login: 'Значение', password: '' },
-                { method: 'Значение', type: 'LDAP', login: 'Значение', password: '' }
+                { id: '1', method: 'XXX', type: 'Локальная', login: 'XXXX.YYYYYYYYY', password: '********' },
+                { id: '2', method: 'XXX: YYYYYYYYY: IIIIII.MMMMMMMMMMM', type: 'Локальная', login: 'XXXX', password: '********' },
+                { id: '3', method: 'XXX', type: 'Локальная', login: 'XXXX', password: '********' },
+                { id: '4', method: 'Значение', type: 'LDAP', login: 'Значение', password: '' },
+                { id: '5', method: 'Значение', type: 'LDAP', login: 'Значение', password: '' }
             ];
         }
     };
@@ -33,17 +33,25 @@ export const useAccountsStore = defineStore('accounts', () => {
     );
 
     const addAccount = () => {
-        accounts.value.push({ method: '', type: 'Локальная', login: '', password: '' });
+        accounts.value.push({
+            id: Date.now().toString() + Math.random().toString(),
+            method: '',
+            type: 'Локальная',
+            login: '',
+            password: ''
+        });
     };
 
-    const updateAccount = (index: number, updatedAccount: Account) => {
-        if (accounts.value[index]) {
-            accounts.value[index] = { ...updatedAccount };
+
+    const updateAccount = (id: string, updatedAccount: Account) => {
+        const index = accounts.value.findIndex(acc => acc.id === id);
+        if (index !== -1) {
+            accounts.value[index] = updatedAccount;
         }
     };
 
-    const deleteAccount = (index: number) => {
-        accounts.value.splice(index, 1);
+    const deleteAccount = (id: string) => {
+    accounts.value = accounts.value.filter(acc => acc.id !== id);
     };
 
     loadFromLocalStorage();

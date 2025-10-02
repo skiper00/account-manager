@@ -2,7 +2,7 @@
     <div class="accounts-section">
         <div class="header">
             <h2>Учетные записи</h2>
-            <button class="add-button" @click="addAccount">+</button>
+            <button class="add-button" @click="accountStore.addAccount">+</button>
         </div>
         <div class="hint">
             <span class="hint-icon">?</span>
@@ -10,18 +10,18 @@
         </div>
         <div class="accounts-table">
             <div class="table-header">
-                <div class="column method">Метод</div>
+                <div class="column method">Метки</div>
                 <div class="column type">Тип записи</div>
                 <div class="column login">Логин</div>
                 <div class="column password">Пароль</div>
                 <div class="column actions"></div>
             </div>
             <AccountItem
-                v-for="(account, index) in accounts"
-                :key="index"
+                v-for="account in accountStore.accounts"
+                :key="account.id"
                 :account="account"
-                @update="updateAccount(index, $event)"
-                @delete="deleteAccount(index)"
+                @update="accountStore.updateAccount(account.id, $event)"
+                @delete="accountStore.deleteAccount(account.id)"
             />
         </div>
     </div>
@@ -31,9 +31,7 @@
 import { useAccountsStore } from '../store/account';
 import AccountItem from './AccountItem.vue';
 
-const store = useAccountsStore();
-const { accounts, addAccount, updateAccount, deleteAccount } = store;
-
+const accountStore = useAccountsStore();
 
 </script>
 
@@ -102,7 +100,7 @@ h2 {
 }
 
 .column {
-    flex: 1;
+    flex: 2;
     padding: 0 10px;
 }
 

@@ -1,50 +1,71 @@
 <template>
-	<div class="table-row">
+<div class="table-row">
 		<div class="column method">
-			<input placeholder="Значение" class="input" v-model="localAccount.method" />
+			<input placeholder="Значение" class="input" v-model="localAccount.method" @input="validateField" />
 		</div>
 		<div class="column type">
-			<select class="select" v-model="localAccount.type">
+			<select class="select" v-model="localAccount.type" @change="validateField">
 				<option>Локальная</option>
 				<option>LDAP</option>
 			</select>
 		</div>
 		<div class="column login">
-			<input placeholder="Значение" class="input" v-model="localAccount.login" />
+			<input 
+			placeholder="Значение" 
+			class="input" 
+			v-model="localAccount.login" 
+			@input="validateField" 
+			maxlength="100"
+			/>
 		</div>
 		<div class="column password">
-			<input v-if="localAccount.type !== 'LDAP'" :type="showPassword ? 'text' : 'password'"
-				class="input password-input" v-model="localAccount.password" />
+			<input
+				v-if="localAccount.type !== 'LDAP'"
+				:type="showPassword ? 'text' : 'password'"
+				class="input password-input"
+				v-model="localAccount.password"
+				@input="validateField"
+				maxlength="100"
+			/>
 		</div>
 		<div class="column actions">
 			<button v-if="localAccount.type !== 'LDAP'" class="action-button" @click="togglePassword">
-				<Icon icon="iconoir:eye" width="24" height="24" />
+				<Icon icon="iconoir:eye" color="gray" width="24" height="24" />
 			</button>
-			<button v-if="localAccount.type !== 'LDAP'" class="action-button" @click="$emit('delete')">
+			<button class="action-button" @click="$emit('delete')">
 				<Icon icon="material-symbols:delete-outline" color="gray" width="24" height="24" />
 			</button>
 		</div>
 	</div>
 </template>
 
-<script setup>
-import { ref, watch, defineProps, defineEmits } from 'vue';
+<script lang="ts" setup>
+import { ref, watch, computed, defineProps, defineEmits } from 'vue';
 import { Icon } from '@iconify/vue';
+import type { Account } from '../store/account';
 
-const props = defineProps({
-	account: {
-		type: Object,
-		required: true
-	}
-});
+const props = defineProps<{ account: Account }>();
 
-const emit = defineEmits(['update', 'delete']);
+const emit = defineEmits<{ 
+	'update': [account: Account], 
+	'delete': []
+}>();
 
-const localAccount = ref({ ...props.account });
+const localAccount = ref<Account>({ ...(props.account as Account) });
 const showPassword = ref(false);
+const isValid = ref(true);
 
-watch(localAccount, (newVal) => {
-	emit('update', newVal);
+const validateField = () => {
+	if (localAccount.value.type === 'Локальная') {
+		isValid.value = localAccount.value.method.trim() !== '' && localAccount.value.login.trim() !== '' && localAccount.value.password.trim() !== '';
+	} else { 
+		isValid.value = localAccount.value.method.trim() !== '' && localAccount.value.login.trim() !== '';
+	}
+	emit('update', localAccount.value);
+};
+
+watch(localAccount, () => {
+	validateField();
 }, { deep: true });
 
 const togglePassword = () => {
